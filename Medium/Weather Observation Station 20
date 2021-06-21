@@ -3,3 +3,13 @@ FROM
 (SELECT LAT_N, ROW_NUMBER() OVER(ORDER BY LAT_N) RNK1, ROW_NUMBER() OVER(ORDER BY LAT_N DESC) RNK2
 FROM STATION)
 WHERE RNK1 IN (RNK2,RNK2-1,RNK2+1);
+
+
+
+Alternate Solution:
+select ROUND(AVG(LAT_N),4) from
+(
+select s1.LAT_N, RANK() OVER (ORDER BY s1.LAT_N) rank,s2.c from station s1 
+cross join
+(select count(*) as c from station) s2
+) where rank in (ceil(c/2),ceil((c+1)/2));
